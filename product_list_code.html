@@ -1,0 +1,298 @@
+<!-- パンくずリスト -->
+	<div id="breadList">
+			<ul>
+				<li id="breadLeft" class="hidden-xs"></li>
+				<li class="breadItem"><a href="<{$home_url}>">Top</a></li>
+				<li id="breadSep" class="hidden-xs"></li>
+				<li id="breadCurrent" class="breadItem"><a href="<{$bid_link}>"><{$bid_name}></a></li>
+				<li id="breadRight" class="hidden-xs"></li>
+			</ul>
+	</div><!-- /#breadList -->
+
+<!-- !サイズガイド -->
+	<div class="container">
+		<div class="row">
+			<div id="sizeMap">
+				<img class="hidden-xs" src=example_server.com/images/page2_product_list_sizeGide_lg.jpg" alt="RIMOWAサイズの選び方" width="884" height="199">
+				<img class="visible-xs" src=example_server.com/images/page2_product_list_sizeGide_xs.jpg" alt="RIMOWAサイズの選び方" width="489" height="425">
+			</div>
+		</div><!-- /.row -->
+	</div><!-- /.container -->
+
+
+
+<!-- !カテゴリー商品一覧ページとグループ商品一覧ページのコンテンツの分離 -->
+<{if ($smarty.get.cbid|escape != "1228667") && ($smarty.get.mode|escape == "cate")}>
+
+
+<!-- !以下、カテゴリー商品一覧用テンプレート -->
+
+<!-- smartyから商品一覧データをjavascriptで受け取り、加工 -->
+<script>
+<!--
+var prodName = new Array(
+	<{section name=num loop=$productlist}>
+		"<{$productlist[num].name}>"
+		<{if !$smarty.section.num.last}>,<{/if}>
+	<{/section}>
+);
+
+var prodImg = new Array(
+	<{section name=num loop=$productlist}>
+		"<{$productlist[num].img_url}>"
+		<{if !$smarty.section.num.last}>,<{/if}>
+	<{/section}>
+);
+
+var prodUrl = new Array(
+	<{section name=num loop=$productlist}>
+		"<{$productlist[num].link_url}>"
+		<{if !$smarty.section.num.last}>,<{/if}>
+	<{/section}>
+);
+
+var prodExpl = new Array(
+	<{section name=num loop=$productlist}>
+		"<{$productlist[num].s_expl}>"
+		<{if !$smarty.section.num.last}>,<{/if}>
+	<{/section}>
+);
+
+
+//商品のカテゴライズ用配列
+var prod = new Array();
+//商品のサイズ（リットル数）一覧格納配列
+var pSize = new Array();
+//商品のサイズ毎の詳細数値(43cm x 60cm x 59cmなど）の格納用配列
+var pSizeExpl = new Array();
+
+//商品名の一次取得用tmp変数
+var pName = "";
+
+//2重配列prod[][]の操作用カウンター
+var cntSize = 0;
+var cntColor = 0;
+var noColor = false;
+
+for (i=0; i<prodName.length; i++) {
+
+	//商品名からサイズ（リットル数）を抜き出す
+	pName = prodName[i].match(/(\d\d?\d?L)/)[1];
+	
+	//カラー指定の無い商品ならば、カラー無しフラグをtrueにする
+	if (prodName[i].match(/L\s?([ァ-ヶー黒]+)(?:$|\s)/) == null) {
+		noColor = true;
+	} else {
+		noColor = false;		
+	}
+
+	//商品名に含まれるサイズが、サイズ一覧pSizeに含まれていない未知のサイズなら
+	if ($.inArray(pName, pSize) == -1) {
+		//商品のサイズ（”～L”）を取得
+		pSize.push(pName);
+		
+		//商品説明文から、サイズ毎の詳細数値(43cm x 60cm x 59cmなど）を取得
+		pSizeExpl.push(prodExpl[i].replace(/(　|\s)+/," "));
+		/* pSizeExpl.push(prodExpl[i].match(/サイズ：(.+)$/)[1] ); */
+		
+		
+		/*****prodへの情報格納*****/
+		
+		//サイズを追加したのでcntSizeカウントアップ（for文最初の1回目だけはスキップ）
+		if (i != 0){
+			cntSize++;	
+		}
+		
+		//prod配列の2段目を追加、cntColorを0にリセットする（1段目のサイズ（リットル数）が変わるため）
+		prod[cntSize] = new Array();
+		cntColor = 0;
+		
+		//prod配列に商品毎の必要情報を格納
+		prod[cntSize][cntColor] = {
+			prodImg: prodImg[i],
+			prodUrl: prodUrl[i]
+		};
+		
+		if(!noColor){
+			prod[cntSize][cntColor].prodColor = prodName[i].match(/L\s?([ァ-ヶー黒]+)(?:$|\s)/)[1];
+		}
+		
+		//カラーを追加したのでcntColorカウントアップ
+		cntColor++;
+		
+		continue;
+	}
+	
+	//prod配列に商品毎の必要情報を格納
+	prod[cntSize][cntColor] = {
+		prodImg: prodImg[i],
+		prodUrl: prodUrl[i]
+	};
+	
+	if(!noColor){
+		prod[cntSize][cntColor].prodColor = prodName[i].match(/L\s?([ァ-ヶー黒]+)(?:$|\s)/)[1];
+	}
+
+	//カラーを追加したのでcntColorカウントアップ
+	cntColor++;
+}
+
+-->
+</script>
+
+    
+    <div class="container category">
+
+		<h2><{$bid_name}></h2>
+		
+		
+		<div class="categoryInner">
+			<div class="row cat_photos">
+
+
+
+			<script type="text/javascript">
+				for (i=0; i < prod.length; i++) {
+					
+					document.write('\
+					<div class="col-sm-6">\
+						<div class="prod">\
+							<div class="prodItem">\
+								<dl>\
+					');
+	
+					document.write('<dt><div class="strongTitle">' + pSize[i] + '</div><div class="titleRead">' + pSizeExpl[i] + '</div></dt>');
+					document.write('\
+									<dd class="prodBody">\
+					');
+					
+					for (j=0; j < prod[i].length; j++) {
+
+						document.write('\
+											<div class="prodInner">\
+												<div class="prodPhoto">\
+						');
+						document.write('<a href="?tid=7&' + prod[i][j].prodUrl.replace(/\?/,"") + '"><img src="' + prod[i][j].prodImg + '" alt="商品画像" width="80" height="80"></a>');
+						document.write('\
+												</div><!-- /.prodPhoto -->\
+						');
+						if(prod[i][j].prodColor != null){
+							document.write('<div class="prodRead">'	+ prod[i][j].prodColor + '</div><!-- /.prodRead -->');
+						}
+						document.write('\
+											</div><!-- /.prodInner -->\
+						');
+
+					}
+					document.write('\
+									</dd>\
+								</dl>\
+							</div><!-- /.prodItem -->\
+						</div><!-- /.prodGroup -->\
+					</div><!-- /.col-sm-6 -->\
+					');
+					
+					if (i % 2 == 1) {
+						document.write('<div class="clearfix hidden-xs"></div>');
+					}
+	
+				}
+			</script>
+
+
+
+			</div><!-- /.row -->
+		</div><!-- /.categoryInner -->		
+
+	</div><!-- /.container -->
+	
+
+	
+
+<{else}>
+
+<!-- !以下、グループ商品一覧用テンプレート -->
+
+    
+    <div class="container category">
+    
+	<!-- 商品があるとき -->
+	<{if $productlist_num != 0}>
+
+		<h2><{$bid_name}></h2>
+		<div class="categoryInner searchInner">
+			<div class="row cat_photos">
+			
+				<!-- 商品グループ・検索結果一覧の出力 -->
+				<{section name=num loop=$productlist}>
+				
+					<{if $smarty.section.num.iteration  == 1}>
+						<div class="col-xs-5 col-xs-offset-1 col-sm-2">
+					<{elseif $smarty.section.num.iteration % 10  == 1}>
+						<div class="col-xs-5 col-xs-offset-1 col-sm-2 col-sm-offset-1">
+					<{elseif $smarty.section.num.iteration % 5  == 1}>
+						<div class="col-xs-5 col-sm-2 col-sm-offset-1">
+					<{elseif $smarty.section.num.iteration % 2  == 1}>
+						<div class="col-xs-5 col-xs-offset-1 col-sm-2 col-sm-offset-0">
+					<{else}>
+						<div class="col-xs-5 col-sm-2">
+					<{/if}>
+					<a href="<{$productlist[num].link_url}>">
+						<div class="prodInner">
+							<div class="prodPhoto">
+								<{if $productlist[num].img_url != ""}>
+									<img src="<{$productlist[num].img_url}>" alt="<{$productlist[num].name}>の写真" />
+								<{else}>
+									<img src="http://img.shop-pro.jp/tmpl_img/23/now100.gif" alt="Now Printingの画像" />
+								<{/if}>
+							</div><!-- /.prodPhoto -->
+							
+							<div class="prodTitle"><{$productlist[num].name}></div><!-- /.prodTitle -->
+							<div class="prodRead"><{$productlist[num].s_expl}></div><!-- /.prodRead -->
+						</div><!-- /.prodInner -->
+					</a>
+					</div><!-- /.col-sm-3 col-lg-5 -->
+					
+					
+					<{if $smarty.section.num.iteration % 2  == 0}>
+						<div class="clearfix visible-xs"></div>
+					<{/if}>
+					
+					<{if $smarty.section.num.iteration % 5  == 0}>
+						<div class="clearfix hidden-xs"></div>	
+					<{/if}>
+					
+				<{/section}>
+
+			</div><!-- /.row -->
+		</div><!-- /.categoryInner -->
+		
+		
+		<!-- 商品数・ページ送り -->
+		<div id="paging">
+			<div style="float: left; width: 20%; text-align: left;">
+				<{if $productlist_prev_page != ""}>
+					<a href="<{$productlist_prev_page}>"><span class="glyphicon glyphicon-arrow-left"></span>前のページへ</a>
+				<{/if}>
+			</div>
+			<div style="float: left; width: 60%; text-align: center;">
+			全 [<{$productlist_num}>] 商品中 [<{$productlist_snum}>-<{$productlist_enum}>] 商品を表示しています
+			</div>
+			<div style="float: right; width: 20%; text-align: right;">
+				<{if $productlist_next_page != ""}>
+					<a href="<{$productlist_next_page}>">次のページへ<span class="glyphicon glyphicon-arrow-right"></span></a>
+				<{/if}>
+			</div>
+		</div>
+		
+	<{else}>
+		<!-- 該当商品がないとき -->
+		<div style="margin-top:10px;">該当する商品がありません</div>
+	<{/if}>
+
+	</div><!-- /.container -->
+
+
+
+<{/if}>	
+
